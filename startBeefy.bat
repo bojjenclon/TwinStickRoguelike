@@ -1,1 +1,1 @@
-beefy js/game.js
+beefy js/Game.js

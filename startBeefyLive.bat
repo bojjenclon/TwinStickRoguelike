@@ -1,1 +1,1 @@
-beefy js/game.js --live
+beefy js/Game.js --live

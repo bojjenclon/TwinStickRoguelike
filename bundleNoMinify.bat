@@ -1,1 +1,1 @@
-browserify js/game.js -o bundle/bundle.js
+browserify js/Game.js -o bundle/bundle.js
