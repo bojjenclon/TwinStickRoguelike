@@ -1,0 +1,1 @@
+browserify js/game.js -o bundle/bundle.js

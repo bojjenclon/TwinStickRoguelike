@@ -1,0 +1,29 @@
+{
+  "name": "TwinStickRoguelike",
+  "version": "0.0.1",
+  "description": "A Binding of Isaac inspired game.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bojjenclon/TwinStickRoguelike.git"
+  },
+  "keywords": [
+    "Electron",
+    "roguelike",
+    "twin-stick",
+    "hitagi",
+    "nodejs"
+  ],
+  "author": "Cornell Daly",
+  "license": "CC BY-NC-ND 4.0",
+  "bugs": {
+    "url": "https://github.com/bojjenclon/TwinStickRoguelike/issues"
+  },
+  "homepage": "https://github.com/bojjenclon/TwinStickRoguelike#readme",
+  "devDependencies": {
+    "electron-prebuilt": "^0.34.0"
+  }
+}
