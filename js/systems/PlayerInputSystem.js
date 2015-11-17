@@ -10,6 +10,12 @@ var PlayerInputSystem = Class({
     this.entities = entities;
     this.inputListener = inputListener;
 
+    this.actionMapping = {
+      'left': 'a',
+      'right': 'd',
+      'up': 'w',
+      'down': 's'
+    };
     this.actionDown = {
       'left': false,
       'right': false,
@@ -53,116 +59,45 @@ var PlayerInputSystem = Class({
     }.bind(this));
 
     for (var key in this.actionPressed) {
-      this.actionPressed[key] = false;
+      if (this.actionPressed.hasOwnProperty(key)) {
+        this.actionPressed[key] = false;
+      }
     }
   },
 
-  setupWASD: function() {
-    this.inputListener.register_combo({
-      keys: 'a',
-      on_keydown: function() {
-        this.actionDown['left'] = true;
-      },
-      on_keyup: function() {
-        this.actionDown['left'] = false;
-        this.actionPressed['left'] = true;
-      },
-      this: this,
-      prevent_repeat: true
-    });
+  bindAction: function(key, action) {
+    if (this.actionMapping[action] !== key) {
+      this.inputListener.unregister_combo(this.actionMapping[action]);
+    }
+
+    this.actionMapping[action] = key;
 
     this.inputListener.register_combo({
-      keys: 'd',
+      keys: key,
       on_keydown: function() {
-        this.actionDown['right'] = true;
+        this.actionDown[action] = true;
       },
       on_keyup: function() {
-        this.actionDown['right'] = false;
-        this.actionPressed['right'] = true;
-      },
-      this: this,
-      prevent_repeat: true
-    });
-
-    this.inputListener.register_combo({
-      keys: 'w',
-      on_keydown: function() {
-        this.actionDown['up'] = true;
-      },
-      on_keyup: function() {
-        this.actionDown['up'] = false;
-        this.actionPressed['up'] = true;
-      },
-      this: this,
-      prevent_repeat: true
-    });
-
-    this.inputListener.register_combo({
-      keys: 's',
-      on_keydown: function() {
-        this.actionDown['down'] = true;
-      },
-      on_keyup: function() {
-        this.actionDown['down'] = false;
-        this.actionPressed['down'] = true;
+        this.actionDown[action] = false;
+        this.actionPressed[action] = true;
       },
       this: this,
       prevent_repeat: true
     });
   },
 
+  setupWASD: function() {
+    this.bindAction('a', 'left');
+    this.bindAction('d', 'right');
+    this.bindAction('w', 'up');
+    this.bindAction('s', 'down');
+  },
+
   setupArrows: function() {
-    this.inputListener.register_combo({
-      keys: 'left',
-      on_keydown: function() {
-        this.actionDown['left'] = true;
-      },
-      on_keyup: function() {
-        this.actionDown['left'] = false;
-        this.actionPressed['left'] = true;
-      },
-      this: this,
-      prevent_repeat: true
-    });
-
-    this.inputListener.register_combo({
-      keys: 'right',
-      on_keydown: function() {
-        this.actionDown['right'] = true;
-      },
-      on_keyup: function() {
-        this.actionDown['right'] = false;
-        this.actionPressed['right'] = true;
-      },
-      this: this,
-      prevent_repeat: true
-    });
-
-    this.inputListener.register_combo({
-      keys: 'up',
-      on_keydown: function() {
-        this.actionDown['up'] = true;
-      },
-      on_keyup: function() {
-        this.actionDown['up'] = false;
-        this.actionPressed['up'] = true;
-      },
-      this: this,
-      prevent_repeat: true
-    });
-
-    this.inputListener.register_combo({
-      keys: 'down',
-      on_keydown: function() {
-        this.actionDown['down'] = true;
-      },
-      on_keyup: function() {
-        this.actionDown['down'] = false;
-        this.actionPressed['down'] = true;
-      },
-      this: this,
-      prevent_repeat: true
-    });
+    this.bindAction('left', 'left');
+    this.bindAction('right', 'right');
+    this.bindAction('up', 'up');
+    this.bindAction('down', 'down');
   }
 });
 

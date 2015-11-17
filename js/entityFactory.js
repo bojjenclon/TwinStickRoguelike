@@ -25,8 +25,8 @@ EntityFactory.makePlayer = function(options) {
   player.drawable.sprite.position.x = options.x || 0;
   player.drawable.sprite.position.y = options.y || 0;
 
-  if (options.container) {
-    options.container.addChild(player.drawable.sprite);
+  if (options.stage) {
+    options.stage.addChild(player.drawable.sprite);
   }
 
   return player;

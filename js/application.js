@@ -2,6 +2,7 @@ var Class = require('js-class');
 var PIXI = require('pixi.js');
 var Stats = require('stats.js');
 var Input = require('keypress.js');
+var BigScreen = require('bigscreen');
 
 var EntityFactory = require('./EntityFactory');
 
@@ -13,6 +14,8 @@ Application = Class({
     this.virtualWidth = options.virtualWidth;
     this.virtualHeight = options.virtualHeight;
 
+    this.domContainer = options.domContainer;
+
     this.lastTime = Date.now();
 
     this.inputListener = null;
@@ -21,35 +24,56 @@ Application = Class({
   },
 
   start: function() {
-    this.container = new PIXI.Container();
+    this.stage = new PIXI.Container();
     this.renderer = PIXI.autoDetectRenderer(this.virtualWidth, this.virtualHeight);
 
     this.renderer.view.id = 'gameCanvas';
     this.renderer.view.style.width = window.innerWidth + 'px';
     this.renderer.view.style.height = window.innerHeight + 'px';
-    document.body.appendChild(this.renderer.view);
+    this.domContainer.appendChild(this.renderer.view);
 
     this.stats = new Stats();
 
     this.stats.domElement.style.position = 'absolute';
     this.stats.domElement.style.left = '0px';
     this.stats.domElement.style.top = '0px';
-    document.body.appendChild(this.stats.domElement);
+    this.domContainer.appendChild(this.stats.domElement);
 
     this.inputListener = new Input.keypress.Listener();
 
-    this.systems.push(new PlayerInputSystem(EntityFactory.entities, this.inputListener));
+    this.playerInput = new PlayerInputSystem(EntityFactory.entities, this.inputListener);
+
+    this.systems.push(this.playerInput);
     this.systems.push(new MovementSystem(EntityFactory.entities));
 
     this.player = EntityFactory.makePlayer({
       imgPath: 'gfx/battleMage.gif',
       x: this.virtualWidth / 2,
       y: this.virtualHeight / 2,
-      container: this.container
+      stage: this.stage
     });
 
     this.attachListeners();
     this.run();
+
+    // press numpad-0 to switch between WASD and Arrow Key movement
+    // used to demonstrate the ability to dynamically rebind/remap keys/actions
+    this.iswasd = true;
+    this.inputListener.register_combo({
+      keys: 'num_0',
+      on_keydown: function() {
+        this.iswasd = !this.iswasd;
+
+        if (this.iswasd) {
+          this.playerInput.setupWASD();
+        }
+        else {
+          this.playerInput.setupArrows();
+        }
+      },
+      this: this,
+      prevent_repeat: true
+    });
   },
 
   attachListeners: function() {
@@ -58,23 +82,17 @@ Application = Class({
       this.renderer.view.style.height = window.innerHeight + 'px';
     }.bind(this));
 
-    window.addEventListener('keyup', function(e) {
-      if (e.keyCode === 13) {
-        var elem = this.renderer.view;
-        if (elem.requestFullscreen) {
-          elem.requestFullscreen();
-        }
-        else if (elem.msRequestFullscreen) {
-          elem.msRequestFullscreen();
-        }
-        else if (elem.mozRequestFullScreen) {
-          elem.mozRequestFullScreen();
-        }
-        else if (elem.webkitRequestFullscreen) {
-          elem.webkitRequestFullscreen();
-        }
-      }
-    }.bind(this));
+    this.inputListener.register_combo({
+      keys: 'alt enter',
+      on_keydown: function() {
+        var element = this.renderer.view;
+
+        BigScreen.toggle(this.domContainer);
+        //BigScreen.toggle(element, onEnter, onExit, onError);
+      },
+      this: this,
+      prevent_repeat: true
+    });
   },
 
   run: function() {
@@ -88,7 +106,7 @@ Application = Class({
       system.update(dt);
     });
 
-    this.renderer.render(this.container);
+    this.renderer.render(this.stage);
 
     this.stats.end();
 
