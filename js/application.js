@@ -5,9 +5,11 @@ var Input = require('keypress.js');
 var BigScreen = require('bigscreen');
 
 var EntityFactory = require('./EntityFactory');
+var MouseManager = require('./MouseManager');
 
 var PlayerInputSystem = require('./systems/PlayerInputSystem');
 var MovementSystem = require('./systems/MovementSystem');
+var ShootSystem = require('./systems/ShootSystem');
 
 Application = Class({
   constructor: function(options) {
@@ -19,12 +21,13 @@ Application = Class({
     this.lastTime = Date.now();
 
     this.inputListener = null;
+    this.mouseManager = null;
 
     this.systems = [];
   },
 
   start: function() {
-    this.stage = new PIXI.Container();
+    Application.currentStage = this.stage = new PIXI.Container();
     this.renderer = PIXI.autoDetectRenderer(this.virtualWidth, this.virtualHeight);
 
     this.renderer.view.id = 'gameCanvas';
@@ -40,11 +43,14 @@ Application = Class({
     this.domContainer.appendChild(this.stats.domElement);
 
     this.inputListener = new Input.keypress.Listener();
+    //this.mouseManager = new MouseManager(this.renderer.view);
+    this.mouseManager = new MouseManager(this.renderer.view, this.renderer.plugins.interaction);
 
-    this.playerInput = new PlayerInputSystem(EntityFactory.entities, this.inputListener);
+    this.playerInput = new PlayerInputSystem(EntityFactory.entities, this.inputListener, this.mouseManager);
 
     this.systems.push(this.playerInput);
     this.systems.push(new MovementSystem(EntityFactory.entities));
+    this.systems.push(new ShootSystem(EntityFactory.entities));
 
     this.player = EntityFactory.makePlayer({
       imgPath: 'gfx/battleMage.gif',
@@ -106,11 +112,17 @@ Application = Class({
       system.update(dt);
     });
 
+    this.mouseManager.update(dt);
+
     this.renderer.render(this.stage);
 
     this.stats.end();
 
     requestAnimationFrame(this.run.bind(this));
+  }
+}, {
+  statics: {
+    currentStage: null
   }
 });
 

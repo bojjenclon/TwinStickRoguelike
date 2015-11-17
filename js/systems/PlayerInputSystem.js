@@ -4,11 +4,13 @@ var PIXI = require('pixi.js');
 var C = {};
 C.Drawable = require('./../components/Drawable');
 C.Velocity = require('./../components/Velocity');
+C.Shoot = require('./../components/Shoot');
 
 var PlayerInputSystem = Class({
-  constructor: function(entities, inputListener) {
+  constructor: function(entities, inputListener, mouseManager) {
     this.entities = entities;
     this.inputListener = inputListener;
+    this.mouseManager = mouseManager;
 
     this.actionMapping = {
       'left': 'a',
@@ -16,12 +18,14 @@ var PlayerInputSystem = Class({
       'up': 'w',
       'down': 's'
     };
+
     this.actionDown = {
       'left': false,
       'right': false,
       'up': false,
       'down': false
     };
+
     this.actionPressed = {
       'left': false,
       'right': false,
@@ -55,6 +59,14 @@ var PlayerInputSystem = Class({
       }
       else {
         entity.velocity.y = 0;
+      }
+
+      if (this.mouseManager.isDown && entity.shoot.canShoot) {
+        //console.log(this.mouseManager.mx, this.mouseManager.my);
+        entity.shoot.canShoot = false;
+        entity.shoot.isShooting = true;
+
+        entity.shoot.targetPos.copy(this.mouseManager.pointer);
       }
     }.bind(this));
 
