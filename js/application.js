@@ -1,10 +1,12 @@
 var Class = require('js-class');
-var hitagi = require('hitagi.js');
+var PIXI = require('pixi.js');
 var Stats = require('stats.js');
+var Input = require('keypress.js');
 
 var EntityFactory = require('./EntityFactory');
 
 var PlayerInputSystem = require('./systems/PlayerInputSystem');
+var MovementSystem = require('./systems/MovementSystem');
 
 Application = Class({
   constructor: function(options) {
@@ -12,21 +14,20 @@ Application = Class({
     this.virtualHeight = options.virtualHeight;
 
     this.lastTime = Date.now();
+
+    this.inputListener = null;
+
+    this.systems = [];
   },
 
   start: function() {
-    this.world = new hitagi.World();
+    this.container = new PIXI.Container();
+    this.renderer = PIXI.autoDetectRenderer(this.virtualWidth, this.virtualHeight);
 
-    this.renderSystem = new hitagi.systems.PixiRenderSystem({
-      width: this.virtualWidth,
-      height: this.virtualHeight
-    });
-    this.world.register(this.renderSystem);
-
-    this.renderSystem.view.id = 'gameCanvas';
-    this.renderSystem.view.style.width = window.innerWidth + 'px';
-    this.renderSystem.view.style.height = window.innerHeight + 'px';
-    document.body.appendChild(this.renderSystem.view);
+    this.renderer.view.id = 'gameCanvas';
+    this.renderer.view.style.width = window.innerWidth + 'px';
+    this.renderer.view.style.height = window.innerHeight + 'px';
+    document.body.appendChild(this.renderer.view);
 
     this.stats = new Stats();
 
@@ -35,29 +36,17 @@ Application = Class({
     this.stats.domElement.style.top = '0px';
     document.body.appendChild(this.stats.domElement);
 
-    this.controlsSystem = this.world.register(new hitagi.systems.ControlsSystem());
+    this.inputListener = new Input.keypress.Listener();
 
-    // arrow keys
-    /*this.controlsSystem.bind(37, 'left');
-    this.controlsSystem.bind(39, 'right');
-    this.controlsSystem.bind(38, 'up');
-    this.controlsSystem.bind(40, 'down');*/
-
-    // WASD
-    this.controlsSystem.bind(65, 'left');
-    this.controlsSystem.bind(68, 'right');
-    this.controlsSystem.bind(87, 'up');
-    this.controlsSystem.bind(83, 'down');
-
-
-    this.world.register(new PlayerInputSystem(this.controlsSystem));
-    this.world.register(new hitagi.systems.VelocitySystem());
+    this.systems.push(new PlayerInputSystem(EntityFactory.entities, this.inputListener));
+    this.systems.push(new MovementSystem(EntityFactory.entities));
 
     this.player = EntityFactory.makePlayer({
+      imgPath: 'gfx/battleMage.gif',
       x: this.virtualWidth / 2,
-      y: this.virtualHeight / 2
+      y: this.virtualHeight / 2,
+      container: this.container
     });
-    this.world.add(this.player);
 
     this.attachListeners();
     this.run();
@@ -65,13 +54,13 @@ Application = Class({
 
   attachListeners: function() {
     window.addEventListener('resize', function(e) {
-      this.renderSystem.view.style.width = window.innerWidth + 'px';
-      this.renderSystem.view.style.height = window.innerHeight + 'px';
+      this.renderer.view.style.width = window.innerWidth + 'px';
+      this.renderer.view.style.height = window.innerHeight + 'px';
     }.bind(this));
 
     window.addEventListener('keyup', function(e) {
       if (e.keyCode === 13) {
-        var elem = this.renderSystem.view;
+        var elem = this.renderer.view;
         if (elem.requestFullscreen) {
           elem.requestFullscreen();
         }
@@ -90,16 +79,16 @@ Application = Class({
 
   run: function() {
     var now = Date.now();
-    var dt = now - this.lastTime;
+    var dt = (now - this.lastTime) / 1000;
     this.lastTime = now;
 
     this.stats.begin();
 
-    // Update the world
-    this.world.tick(dt);
+    this.systems.forEach(function(system) {
+      system.update(dt);
+    });
 
-    // Render
-    this.renderSystem.render();
+    this.renderer.render(this.container);
 
     this.stats.end();
 

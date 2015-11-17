@@ -1,28 +1,33 @@
-var hitagi = require('hitagi.js');
+var EntityManager = require('tiny-ecs').EntityManager;
 
-EntityFactory = function() {};
+var C = {};
+C.Drawable = require('./components/Drawable');
+C.Velocity = require('./components/Velocity');
+
+var EntityFactory = {};
+
+EntityFactory.entities = new EntityManager();
 
 EntityFactory.makePlayer = function(options) {
-  var player = new hitagi.Entity();
+  var player = EntityFactory.entities.createEntity();
 
-  player.attach({
-    $id: 'player'
-  });
+  player.addTag('player');
 
-  player.attach(new hitagi.components.Position({
-    x: options.x || 0,
-    y: options.y || 0
-  }));
+  player.addComponent(C.Drawable);
+  player.addComponent(C.Velocity);
 
-  player.attach(new hitagi.components.graphics.Graphic());
-  player.attach(new hitagi.components.graphics.StaticSprite({
-    path: 'gfx/battlemage.gif'
-  }));
+  player.drawable.texture = PIXI.Texture.fromImage(options.imgPath);
+  player.drawable.sprite = new PIXI.Sprite(player.drawable.texture);
 
-  player.attach(new hitagi.components.Velocity({
-    xspeed: 0,
-    yspeed: 0
-  }));
+  player.drawable.sprite.anchor.x = 0.5;
+  player.drawable.sprite.anchor.y = 0.5;
+
+  player.drawable.sprite.position.x = options.x || 0;
+  player.drawable.sprite.position.y = options.y || 0;
+
+  if (options.container) {
+    options.container.addChild(player.drawable.sprite);
+  }
 
   return player;
 };
