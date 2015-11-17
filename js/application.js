@@ -10,6 +10,7 @@ var MouseManager = require('./MouseManager');
 var PlayerInputSystem = require('./systems/PlayerInputSystem');
 var MovementSystem = require('./systems/MovementSystem');
 var ShootSystem = require('./systems/ShootSystem');
+var ExpirableSystem = require('./systems/ExpirableSystem');
 
 Application = Class({
   constructor: function(options) {
@@ -51,6 +52,7 @@ Application = Class({
     this.systems.push(this.playerInput);
     this.systems.push(new MovementSystem(EntityFactory.entities));
     this.systems.push(new ShootSystem(EntityFactory.entities));
+    this.systems.push(new ExpirableSystem(EntityFactory.entities));
 
     this.player = EntityFactory.makePlayer({
       imgPath: 'gfx/battleMage.gif',

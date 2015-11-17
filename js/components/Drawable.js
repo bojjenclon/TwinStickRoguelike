@@ -1,6 +1,7 @@
 function Drawable() {
   this.texture = null;
   this.sprite = null;
+  this.stage = null;
 }
 
 if (module) {

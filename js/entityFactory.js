@@ -4,6 +4,7 @@ var C = {};
 C.Drawable = require('./components/Drawable');
 C.Velocity = require('./components/Velocity');
 C.Shoot = require('./components/Shoot');
+C.Expirable = require('./components/Expirable');
 
 var EntityFactory = {};
 
@@ -20,6 +21,7 @@ EntityFactory.makePlayer = function(options) {
 
   player.drawable.texture = PIXI.Texture.fromImage(options.imgPath);
   player.drawable.sprite = new PIXI.Sprite(player.drawable.texture);
+  player.drawable.stage = options.stage;
 
   player.drawable.sprite.anchor.x = 0.5;
   player.drawable.sprite.anchor.y = 0.5;
@@ -27,9 +29,7 @@ EntityFactory.makePlayer = function(options) {
   player.drawable.sprite.position.x = options.x || 0;
   player.drawable.sprite.position.y = options.y || 0;
 
-  if (options.stage) {
-    options.stage.addChild(player.drawable.sprite);
-  }
+  player.drawable.stage.addChild(player.drawable.sprite);
 
   return player;
 };
@@ -41,9 +41,11 @@ EntityFactory.makeBullet = function(options) {
 
   bullet.addComponent(C.Drawable);
   bullet.addComponent(C.Velocity);
+  bullet.addComponent(C.Expirable);
 
   bullet.drawable.texture = PIXI.Texture.fromImage(options.imgPath);
   bullet.drawable.sprite = new PIXI.Sprite(bullet.drawable.texture);
+  bullet.drawable.stage = options.stage;
 
   bullet.drawable.sprite.anchor.x = 0.5;
   bullet.drawable.sprite.anchor.y = 0.5;
@@ -54,9 +56,7 @@ EntityFactory.makeBullet = function(options) {
   bullet.velocity.x = options.velocity.x;
   bullet.velocity.y = options.velocity.y;
 
-  if (options.stage) {
-    options.stage.addChild(bullet.drawable.sprite);
-  }
+  bullet.drawable.stage.addChild(bullet.drawable.sprite);
 
   return bullet;
 };
