@@ -62,7 +62,6 @@ var PlayerInputSystem = Class({
       }
 
       if (this.mouseManager.isDown && entity.shoot.canShoot) {
-        //console.log(this.mouseManager.mx, this.mouseManager.my);
         entity.shoot.canShoot = false;
         entity.shoot.isShooting = true;
 

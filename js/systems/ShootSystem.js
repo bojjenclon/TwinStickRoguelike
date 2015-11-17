@@ -15,9 +15,23 @@ var ShootSystem = Class({
 
     shooters.forEach(function(entity) {
       if (entity.shoot.isShooting) {
+        var direction = new PIXI.Point();
+        direction.copy(entity.drawable.sprite.position);
+
+        direction.x -= entity.shoot.targetPos.x;
+        direction.y -= entity.shoot.targetPos.y;
+
+        var magnitude = Math.sqrt(direction.x * direction.x + direction.y * direction.y);
+
+        direction.x /= magnitude;
+        direction.y /= magnitude;
+
+        var velocity = new PIXI.Point(-120 * direction.x, -120 * direction.y);
+
         EntityFactory.makeBullet({
-          x: entity.shoot.targetPos.x,
-          y: entity.shoot.targetPos.y,
+          x: entity.drawable.sprite.position.x,
+          y: entity.drawable.sprite.position.y,
+          velocity: velocity,
           imgPath: "gfx/battleMage.gif",
           stage: Application.currentStage
         });

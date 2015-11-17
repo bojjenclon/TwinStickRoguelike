@@ -51,8 +51,8 @@ EntityFactory.makeBullet = function(options) {
   bullet.drawable.sprite.position.x = options.x || 0;
   bullet.drawable.sprite.position.y = options.y || 0;
 
-  /*bullet.velocity.x = options.velocity.x;
-  bullet.velocity.y = options.velocity.y;*/
+  bullet.velocity.x = options.velocity.x;
+  bullet.velocity.y = options.velocity.y;
 
   if (options.stage) {
     options.stage.addChild(bullet.drawable.sprite);
