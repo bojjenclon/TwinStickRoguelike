@@ -1,9 +1,8 @@
 var Class = require('js-class');
-var Hammer = require('hammerjs');
 
 var MouseManager = Class({
-  constructor: function(domElement, interactionManager) {
-    this.hammer = new Hammer(domElement);
+  constructor: function(canvasElement, interactionManager) {
+    this.canvasElement = canvasElement;
     this.interactionManager = interactionManager;
 
     this.isDown = false;
@@ -11,31 +10,17 @@ var MouseManager = Class({
 
     this.pointer = new PIXI.Point(0, 0);
 
-    this.hammer.get('press').set({
-      time: 1
-    });
-
-    this.hammer.on('press', function(e) {
+    this.canvasElement.addEventListener('mousedown', function(e) {
       this.isDown = true;
 
-      this.interactionManager.mapPositionToPoint(this.pointer, e.center.x, e.center.y);
+      this.interactionManager.mapPositionToPoint(this.pointer, e.x, e.y);
     }.bind(this));
 
-    this.hammer.on('panmove', function(e) {
-      this.interactionManager.mapPositionToPoint(this.pointer, e.center.x, e.center.y);
+    this.canvasElement.addEventListener('mousemove', function(e) {
+      this.interactionManager.mapPositionToPoint(this.pointer, e.x, e.y);
     }.bind(this));
 
-    this.hammer.on('pressup', function(e) {
-      this.isDown = false;
-      this.wasPressed = true;
-    }.bind(this));
-
-    this.hammer.on('panend', function(e) {
-      this.isDown = false;
-      this.wasPressed = true;
-    }.bind(this));
-
-    this.hammer.on('tap', function(e) {
+    this.canvasElement.addEventListener('mouseup', function(e) {
       this.isDown = false;
       this.wasPressed = true;
     }.bind(this));

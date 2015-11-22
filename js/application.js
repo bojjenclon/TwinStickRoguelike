@@ -48,7 +48,6 @@ Application = Class({
     this.domContainer.appendChild(this.stats.domElement);
 
     this.inputListener = new Input.keypress.Listener();
-    //this.mouseManager = new MouseManager(this.renderer.view);
     this.mouseManager = new MouseManager(this.renderer.view, this.renderer.plugins.interaction);
 
     this.playerInput = new PlayerInputSystem(EntityFactory.entities, this.inputListener, this.mouseManager);
