@@ -61,7 +61,7 @@ var PlayerInputSystem = Class({
         entity.velocity.y = 0;
       }
 
-      if (this.mouseManager.isDown && entity.shoot.canShoot) {
+      if (this.mouseManager.isDown.left && entity.shoot.canShoot) {
         entity.shoot.canShoot = false;
         entity.shoot.isShooting = true;
 

@@ -5,13 +5,24 @@ var MouseManager = Class({
     this.canvasElement = canvasElement;
     this.interactionManager = interactionManager;
 
-    this.isDown = false;
-    this.wasPressed = false;
+    this.isDown = {
+      left: false,
+      right: false
+    };
+    this.wasPressed = {
+      left: false,
+      right: false
+    };
 
     this.pointer = new PIXI.Point(0, 0);
 
     this.canvasElement.addEventListener('mousedown', function(e) {
-      this.isDown = true;
+      if (e.button === MouseManager.MOUSE_LEFT) {
+        this.isDown.left = true;
+      }
+      else if (e.button === MouseManager.MOUSE_RIGHT) {
+        this.isDown.right = true;
+      }
 
       this.interactionManager.mapPositionToPoint(this.pointer, e.x, e.y);
     }.bind(this));
@@ -21,13 +32,24 @@ var MouseManager = Class({
     }.bind(this));
 
     this.canvasElement.addEventListener('mouseup', function(e) {
-      this.isDown = false;
-      this.wasPressed = true;
+      if (e.button === MouseManager.MOUSE_LEFT) {
+        this.isDown.left = false;
+        this.wasPressed.left = true;
+      }
+      else if (e.button === MouseManager.MOUSE_RIGHT) {
+        this.isDown.right = false;
+        this.wasPressed.right = true;
+      }
     }.bind(this));
   },
 
   update: function(dt) {
     this.wasPressed = false;
+  }
+}, {
+  statics: {
+    MOUSE_LEFT: 0,
+    MOUSE_RIGHT: 2
   }
 });
 
