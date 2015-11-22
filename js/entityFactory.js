@@ -1,5 +1,7 @@
 var EntityManager = require('tiny-ecs').EntityManager;
 
+var ResourceManager = require('./ResourceManager');
+
 var C = {};
 C.Drawable = require('./components/Drawable');
 C.Velocity = require('./components/Velocity');
@@ -19,7 +21,7 @@ EntityFactory.makePlayer = function(options) {
   player.addComponent(C.Velocity);
   player.addComponent(C.Shoot);
 
-  player.drawable.texture = PIXI.Texture.fromImage(options.imgPath);
+  player.drawable.texture = ResourceManager.getTexture(options.imgPath);
   player.drawable.sprite = new PIXI.Sprite(player.drawable.texture);
   player.drawable.stage = options.stage;
 
@@ -43,7 +45,7 @@ EntityFactory.makeBullet = function(options) {
   bullet.addComponent(C.Velocity);
   bullet.addComponent(C.Expirable);
 
-  bullet.drawable.texture = PIXI.Texture.fromImage(options.imgPath);
+  bullet.drawable.texture = ResourceManager.getTexture(options.imgPath);
   bullet.drawable.sprite = new PIXI.Sprite(bullet.drawable.texture);
   bullet.drawable.stage = options.stage;
 

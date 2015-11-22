@@ -36,6 +36,10 @@ Application = Class({
     this.renderer.view.style.height = window.innerHeight + 'px';
     this.domContainer.appendChild(this.renderer.view);
 
+    this.renderer.view.oncontextmenu = function(e) {
+      return false;
+    };
+
     this.stats = new Stats();
 
     this.stats.domElement.style.position = 'absolute';
